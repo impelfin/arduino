@@ -1,0 +1,5 @@
+"main.obj",
+"MZTX06A.obj" 
+TO "demo_C51" 
+RAMSIZE(256) 
+CODE( 0X0080-0XC07E )

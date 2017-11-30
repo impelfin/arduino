@@ -1,0 +1,472 @@
+C51 COMPILER V7.07   MZTX06A                                                               01/05/2013 17:33:28 PAGE 1   
+
+
+C51 COMPILER V7.07, COMPILATION OF MODULE MZTX06A
+OBJECT MODULE PLACED IN MZTX06A.OBJ
+COMPILER INVOKED BY: d:\Keil\C51\BIN\C51.EXE MZTX06A.c BROWSE DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          #include <intrins.h>
+   2          #include "STC_NEW_8051.H"
+   3          #include "MZTX06A.h"
+   4          #include "ascii hex(8x16).h"
+   5          #include "GB2312.h"
+   6          #include "qqp.h"
+   7          
+   8          uint color[]={0xf800,0x07e0,0x001f,0xffe0,0x0000,0xffff,0x07ff,0xf81f};
+   9          
+  10          //=============================================
+  11          void Delay(unsigned int t)
+  12          {
+  13   1              unsigned int n,m;
+  14   1              for(n=0;n<t;n++)
+  15   1                      for(m=0;m<600;m++);
+  16   1      }
+  17          
+  18          
+  19          void delay_ms(uint t)
+  20          {
+  21   1              uchar i,j;
+  22   1              while(--t)
+  23   1              {
+  24   2                      j=8;
+  25   2                      while(--j)
+  26   2                              while(--i);
+  27   2              }
+  28   1      }
+  29          void DLY()
+  30          {
+  31   1              _nop_();
+  32   1              _nop_();
+  33   1              _nop_();
+  34   1              _nop_();
+  35   1              _nop_();
+  36   1              _nop_();
+  37   1      }
+  38          
+  39          void LCD_WR_REG(uint index)
+  40          {
+  41   1              uchar i;
+  42   1      
+  43   1              SPI_CS = 0;
+  44   1              SPI_RS = 0;
+  45   1      #ifdef STC_SPI
+  46   1              SPDAT = index>>8;
+  47   1              while(!(SPSTAT&0x80));
+  48   1              SPSTAT =0xC0;
+  49   1              SPDAT = (uchar)index;
+  50   1              while(!(SPSTAT&0x80));
+  51   1              SPSTAT =0xC0;
+  52   1      #else
+                      for(i=0;i<16;i++)
+                      {
+                              SPI_SCL = 0;
+C51 COMPILER V7.07   MZTX06A                                                               01/05/2013 17:33:28 PAGE 2   
+
+                              SPI_SCI = (bit)(index&0x8000);
+                              index=index<<1;
+                              SPI_SCL=1;
+                      }
+              #endif
+  61   1              SPI_CS = 1;
+  62   1      }
+*** WARNING C280 IN LINE 41 OF MZTX06A.C: 'i': unreferenced local variable
+  63          
+  64          void LCD_WR_CMD(uint index,uint val)
+  65          {
+  66   1              uchar i;
+  67   1      
+  68   1              SPI_CS = 0;
+  69   1              SPI_RS = 0;
+  70   1      #ifdef STC_SPI
+  71   1              SPDAT = index>>8;
+  72   1              while(!(SPSTAT&0x80));
+  73   1              SPSTAT =0xC0;
+  74   1              SPDAT = (uchar)index;
+  75   1              while(!(SPSTAT&0x80));
+  76   1              SPSTAT =0xC0;
+  77   1      #else
+                      for(i=0;i<16;i++)
+                      {
+                              SPI_SCL = 0;
+                              SPI_SCI = (bit)(index&0x8000);
+                              index=index<<1;
+                              SPI_SCL=1;
+                      }
+              #endif
+  86   1              //SPI_CS = 1;
+  87   1              SPI_RS = 1;     
+  88   1              //SPI_CS = 0;
+  89   1      #ifdef STC_SPI
+  90   1              SPDAT = val>>8;
+  91   1              while(!(SPSTAT&0x80));
+  92   1              SPSTAT =0xC0;
+  93   1              SPDAT = (uchar)val;
+  94   1              while(!(SPSTAT&0x80));
+  95   1              SPSTAT =0xC0;
+  96   1      #else
+                      for(i=0;i<16;i++)
+                      {
+                              SPI_SCL = 0;
+                              SPI_SCI = (bit)(val&0x8000);
+                              val=val<<1;
+                              SPI_SCL=1;
+                      }
+              #endif
+ 105   1              SPI_CS = 1;
+ 106   1      }
+*** WARNING C280 IN LINE 66 OF MZTX06A.C: 'i': unreferenced local variable
+ 107          
+ 108          void LCD_WR_Data(uint val)
+ 109          {
+ 110   1              uchar i;
+ 111   1      #ifdef STC_SPI
+ 112   1              SPDAT = val>>8;
+ 113   1              while(!(SPSTAT&0x80));
+ 114   1              SPSTAT =0xC0;
+ 115   1              SPDAT = (uchar)val;
+C51 COMPILER V7.07   MZTX06A                                                               01/05/2013 17:33:28 PAGE 3   
+
+ 116   1              while(!(SPSTAT&0x80));
+ 117   1              SPSTAT =0xC0;
+ 118   1      #else
+                      //SPI_CS = 0;
+                      for(i=0;i<16;i++)
+                      {
+                              SPI_SCL = 0;
+                              SPI_SCI = (bit)(val&0x8000);
+                              val=val<<1;
+                              SPI_SCL=1;
+                      }
+              #endif
+ 128   1              //SPI_CS = 1;
+ 129   1      }
+*** WARNING C280 IN LINE 110 OF MZTX06A.C: 'i': unreferenced local variable
+ 130          uint SPI_RD_REG16(uint index)
+ 131          {
+ 132   1              return index;
+ 133   1      }
+ 134          
+ 135          code uint gamma[][2]=
+ 136          {
+ 137                  0x2132, 0x5343 ,
+ 138                  0x2141, 0x1021 ,
+ 139                  0x0006, 0x0003 ,
+ 140                  0x1411, 0x0011 ,
+ 141                  0x100B, 0x050a ,
+ 142                  0x2132, 0x4342 ,
+ 143                  0x2242, 0x1100 ,
+ 144                  0x0006, 0x0003 ,
+ 145                  0x3421, 0x1201 ,
+ 146                  0x0B07, 0x050a ,
+ 147          };
+ 148          void LCD_Init()
+ 149          {
+ 150   1              SPI_RST=0;
+ 151   1              delay_ms(20);
+ 152   1              SPI_RST=1;
+ 153   1              delay_ms(20);
+ 154   1      
+ 155   1              LCD_WR_CMD( 0x000, 0x0001 ); /* oschilliation start */
+ 156   1              delay_ms( 10 );
+ 157   1              /* Power settings */    
+ 158   1              LCD_WR_CMD( 0x100, 0x0000 ); /*power supply setup*/     
+ 159   1              LCD_WR_CMD( 0x101, 0x0000 ); 
+ 160   1              LCD_WR_CMD( 0x102, 0x3110 ); 
+ 161   1              LCD_WR_CMD( 0x103, 0xe200 ); 
+ 162   1              LCD_WR_CMD( 0x110, 0x009d ); 
+ 163   1              LCD_WR_CMD( 0x111, 0x0022 ); 
+ 164   1              LCD_WR_CMD( 0x100, 0x0120 ); 
+ 165   1              delay_ms( 20 );
+ 166   1      
+ 167   1              LCD_WR_CMD( 0x100, 0x3120 );
+ 168   1              delay_ms( 80 );
+ 169   1              /* Display control */   
+ 170   1              LCD_WR_CMD( 0x001, 0x0100 );
+ 171   1              LCD_WR_CMD( 0x002, 0x0000 );
+ 172   1              LCD_WR_CMD( 0x003, 0x1230 );
+ 173   1              LCD_WR_CMD( 0x006, 0x0000 );
+ 174   1              LCD_WR_CMD( 0x007, 0x0101 );
+ 175   1              LCD_WR_CMD( 0x008, 0x0808 );
+ 176   1              LCD_WR_CMD( 0x009, 0x0000 );
+C51 COMPILER V7.07   MZTX06A                                                               01/05/2013 17:33:28 PAGE 4   
+
+ 177   1              LCD_WR_CMD( 0x00b, 0x0000 );
+ 178   1              LCD_WR_CMD( 0x00c, 0x0000 );
+ 179   1              LCD_WR_CMD( 0x00d, 0x0018 );
+ 180   1              /* LTPS control settings */   
+ 181   1              LCD_WR_CMD( 0x012, 0x0000 );
+ 182   1              LCD_WR_CMD( 0x013, 0x0000 );
+ 183   1              LCD_WR_CMD( 0x018, 0x0000 );
+ 184   1              LCD_WR_CMD( 0x019, 0x0000 );
+ 185   1      
+ 186   1              LCD_WR_CMD( 0x203, 0x0000 );
+ 187   1              LCD_WR_CMD( 0x204, 0x0000 );
+ 188   1      
+ 189   1              LCD_WR_CMD( 0x210, 0x0000 );
+ 190   1              LCD_WR_CMD( 0x211, 0x00ef );
+ 191   1              LCD_WR_CMD( 0x212, 0x0000 );
+ 192   1              LCD_WR_CMD( 0x213, 0x013f );
+ 193   1              LCD_WR_CMD( 0x214, 0x0000 );
+ 194   1              LCD_WR_CMD( 0x215, 0x0000 );
+ 195   1              LCD_WR_CMD( 0x216, 0x0000 );
+ 196   1              LCD_WR_CMD( 0x217, 0x0000 );
+ 197   1              #define YT      1
+ 198   1              // Gray scale settings
+ 199   1              LCD_WR_CMD( 0x300, 0x5343);
+ 200   1              LCD_WR_CMD( 0x301, 0x1021);
+ 201   1              LCD_WR_CMD( 0x302, 0x0003);
+ 202   1              LCD_WR_CMD( 0x303, 0x0011);
+ 203   1              LCD_WR_CMD( 0x304, 0x050a);
+ 204   1              LCD_WR_CMD( 0x305, 0x4342);
+ 205   1              LCD_WR_CMD( 0x306, 0x1100);
+ 206   1              LCD_WR_CMD( 0x307, 0x0003);
+ 207   1              LCD_WR_CMD( 0x308, 0x1201);
+ 208   1              LCD_WR_CMD( 0x309, 0x050a);
+ 209   1      
+ 210   1              /* RAM access settings */ 
+ 211   1              LCD_WR_CMD( 0x400, 0x4027 );
+ 212   1              LCD_WR_CMD( 0x401, 0x0000 );
+ 213   1              LCD_WR_CMD( 0x402, 0x0000 );    /* First screen drive position (1) */           
+ 214   1              LCD_WR_CMD( 0x403, 0x013f );    /* First screen drive position (2) */           
+ 215   1              LCD_WR_CMD( 0x404, 0x0000 );
+ 216   1      
+ 217   1              LCD_WR_CMD( 0x200, 0x0000 );
+ 218   1              LCD_WR_CMD( 0x201, 0x0000 );
+ 219   1              
+ 220   1              LCD_WR_CMD( 0x100, 0x7120 );
+ 221   1              LCD_WR_CMD( 0x007, 0x0103 );
+ 222   1              delay_ms( 10 );
+ 223   1              LCD_WR_CMD( 0x007, 0x0113 );
+ 224   1      }
+ 225          
+ 226          void LCD_test()
+ 227          {
+ 228   1              uint temp,num,i;
+ 229   1              uchar n;
+ 230   1                      
+ 231   1              LCD_WR_CMD(0x210,0x00);
+ 232   1              LCD_WR_CMD(0x212,0x0000);
+ 233   1              LCD_WR_CMD(0x211,0xEF);
+ 234   1              LCD_WR_CMD(0x213,0x013F);
+ 235   1      
+ 236   1              LCD_WR_CMD(0x200,0x0000);
+ 237   1              LCD_WR_CMD(0x201,0x0000);
+ 238   1                      
+C51 COMPILER V7.07   MZTX06A                                                               01/05/2013 17:33:28 PAGE 5   
+
+ 239   1              LCD_WR_REG(0x202);
+ 240   1              SPI_CS = 0;
+ 241   1              SPI_RS = 1;
+ 242   1              for(n=0;n<8;n++)
+ 243   1              {
+ 244   2                  temp=color[n];
+ 245   2                      for(num=40*240;num>0;num--)
+ 246   2                      {
+ 247   3                              LCD_WR_Data(temp);
+ 248   3                      }
+ 249   2              }
+ 250   1              for(n=0;n<3;n++)
+ 251   1              {
+ 252   2                      LCD_WR_CMD(0x210,0x00);
+ 253   2                      LCD_WR_CMD(0x212,0x0000);
+ 254   2                      LCD_WR_CMD(0x211,0xEF);
+ 255   2                      LCD_WR_CMD(0x213,0x013F);
+ 256   2      
+ 257   2                      LCD_WR_CMD(0x200,0x0000);
+ 258   2                      LCD_WR_CMD(0x201,0x0000);
+ 259   2                      
+ 260   2                      LCD_WR_REG(0x202);
+ 261   2                      SPI_CS = 0;
+ 262   2                      SPI_RS = 1;
+ 263   2                  temp=color[n];
+ 264   2                      for(i=0;i<240;i++)
+ 265   2                      {
+ 266   3                              for(num=0;num<320;num++)
+ 267   3                              {
+ 268   4                                      LCD_WR_Data(temp);
+ 269   4                              }
+ 270   3                      }
+ 271   2              }
+ 272   1              SPI_CS = 1;
+ 273   1      }
+ 274          
+ 275          void LCD_clear(uint p)
+ 276          {
+ 277   1              uint i,j;
+ 278   1              LCD_WR_CMD(0x210,0x00);
+ 279   1              LCD_WR_CMD(0x212,0x0000);
+ 280   1              LCD_WR_CMD(0x211,0xEF);
+ 281   1              LCD_WR_CMD(0x213,0x013F);
+ 282   1                      
+ 283   1              LCD_WR_CMD(0x200,0x0000);
+ 284   1              LCD_WR_CMD(0x201,0x0000);
+ 285   1              
+ 286   1              LCD_WR_REG(0x202);
+ 287   1              SPI_CS = 0;
+ 288   1              SPI_RS = 1;
+ 289   1              for(i=0;i<320;i++)
+ 290   1              {
+ 291   2                      for(j=0;j<240;j++)
+ 292   2                      {
+ 293   3                        LCD_WR_Data(p);
+ 294   3                      }
+ 295   2              }
+ 296   1              SPI_CS = 1;
+ 297   1      }
+ 298          void LCD_QQ()
+ 299          {
+ 300   1              uint num;
+C51 COMPILER V7.07   MZTX06A                                                               01/05/2013 17:33:28 PAGE 6   
+
+ 301   1              uint *p; 
+ 302   1              uchar c,g;
+ 303   1              //显示小QQ图标
+ 304   1              for(g=0;g<8;g++)
+ 305   1              {
+ 306   2                      for(c=0;c<6;c++)
+ 307   2                      {
+ 308   3                              LCD_WR_CMD(0x210,c*40);
+ 309   3                              LCD_WR_CMD(0x212,g*40);
+ 310   3                              LCD_WR_CMD(0x211,c*40+39);
+ 311   3                              LCD_WR_CMD(0x213,g*40+39);
+ 312   3              
+ 313   3                              LCD_WR_CMD(0x200,c*40);
+ 314   3                              LCD_WR_CMD(0x201,g*40);
+ 315   3              
+ 316   3                              LCD_WR_REG(0x202);
+ 317   3                              SPI_CS = 0;
+ 318   3                              SPI_RS = 1;
+ 319   3                              p = (uint*)gImage_qqp;
+ 320   3                              for(num=0;num<1600;num++)       //
+ 321   3                              {               
+ 322   4                                      LCD_WR_Data(*p++);
+ 323   4                              }
+ 324   3                              //delay_ms(100);                
+ 325   3                      }
+ 326   2              }
+ 327   1              SPI_CS = 1;
+ 328   1      }
+ 329          
+ 330          //8X16点阵的字符显示函数
+ 331          //参数说明：
+ 332          //                casc:字符对应字模中的位置
+ 333          //         x:显示位置第几列,每行是240/8 ==30列
+ 334          //         y:显示位置第几行,整屏是320/16==20行
+ 335          
+ 336          void DisplayChar(uchar casc,uchar postion_x,uchar postion_y)
+ 337          {
+ 338   1              uchar i,j,b;
+ 339   1              uchar *p;
+ 340   1              
+ 341   1              LCD_WR_CMD(0x210,postion_x*8);  //x start point
+ 342   1              LCD_WR_CMD(0x212,postion_y*16);         //y start point
+ 343   1              LCD_WR_CMD(0x211,postion_x*8+7);        //x end point
+ 344   1              LCD_WR_CMD(0x213,postion_y*16+15);      //y end point
+ 345   1      
+ 346   1              LCD_WR_CMD(0x200,postion_x*8);  
+ 347   1              LCD_WR_CMD(0x201,postion_y*16);
+ 348   1              
+ 349   1              LCD_WR_REG(0x202);
+ 350   1              SPI_CS = 0;
+ 351   1              SPI_RS = 1;
+ 352   1              p=ascii;
+ 353   1              p+=casc*16;
+ 354   1              for(j=0;j<16;j++)
+ 355   1              {
+ 356   2                      b=*(p+j);
+ 357   2                      for(i=0;i<8;i++)
+ 358   2                      {
+ 359   3                              if(b&0x80)
+ 360   3                              {
+ 361   4                                      LCD_WR_Data(0xffff);
+ 362   4                              }
+C51 COMPILER V7.07   MZTX06A                                                               01/05/2013 17:33:28 PAGE 7   
+
+ 363   3                              else
+ 364   3                              {
+ 365   4                                      LCD_WR_Data(0x0000);
+ 366   4                              }
+ 367   3                              b=b<<1;
+ 368   3                              
+ 369   3                      }       
+ 370   2              }
+ 371   1              SPI_CS = 1;
+ 372   1      }
+ 373          
+ 374          void DisplayString(uchar *s,uchar x,uchar y)//英文字符串显示.
+ 375          {
+ 376   1              while (*s) 
+ 377   1              { 
+ 378   2                      DisplayChar(*s,x,y);
+ 379   2                      if(++x>=30)
+ 380   2                      {
+ 381   3                              x=0;
+ 382   3                              if(++y>=20)
+ 383   3                              {
+ 384   4                                      y=0;
+ 385   4                              }
+ 386   3                      }
+ 387   2                      s++;
+ 388   2          }
+ 389   1      }
+ 390          
+ 391          //16X16点阵的汉字显示函数
+ 392          //参数说明：
+ 393          //                gb:汉字对应字模中的位置
+ 394          //         x:显示位置第几列
+ 395          //         y:显示位置第几行
+ 396          void DisplayGB2312(uchar gb,uchar postion_x,uchar postion_y)
+ 397          {
+ 398   1              uchar i,j,b;
+ 399   1              uchar *p;
+ 400   1              
+ 401   1              LCD_WR_CMD(0x210,postion_x*16);         //x start point
+ 402   1              LCD_WR_CMD(0x212,postion_y*16);         //y start point
+ 403   1              LCD_WR_CMD(0x211,postion_x*16+15);      //x end point
+ 404   1              LCD_WR_CMD(0x213,postion_y*16+15);      //y end point
+ 405   1      
+ 406   1              LCD_WR_CMD(0x200,postion_x*16); 
+ 407   1              LCD_WR_CMD(0x201,postion_y*16);
+ 408   1      
+ 409   1              LCD_WR_REG(0x202);
+ 410   1              SPI_CS = 0;
+ 411   1              SPI_RS = 1;
+ 412   1              p=GB2312;
+ 413   1              p+=gb*32;
+ 414   1              for(j=0;j<32;j++)
+ 415   1              {
+ 416   2                      b=*(p+j);
+ 417   2                      for(i=0;i<8;i++)
+ 418   2                      {
+ 419   3                              if(b&0x80)
+ 420   3                              {
+ 421   4                                      LCD_WR_Data(0xffff);
+ 422   4                              }
+ 423   3                              else
+ 424   3                              {
+C51 COMPILER V7.07   MZTX06A                                                               01/05/2013 17:33:28 PAGE 8   
+
+ 425   4                                      LCD_WR_Data(0x0000);
+ 426   4                              }
+ 427   3                              b=b<<1;
+ 428   3                              
+ 429   3                      }       
+ 430   2              }
+ 431   1              SPI_CS = 1;
+ 432   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1486    ----
+   CONSTANT SIZE    =   5480    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     16      32
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  3 WARNING(S),  0 ERROR(S)

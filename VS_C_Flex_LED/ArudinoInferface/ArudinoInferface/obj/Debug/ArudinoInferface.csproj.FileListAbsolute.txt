@@ -1,0 +1,9 @@
+c:\users\user\documents\visual studio 2013\Projects\ArudinoInferface\ArudinoInferface\bin\Debug\ArudinoInferface.exe.config
+c:\users\user\documents\visual studio 2013\Projects\ArudinoInferface\ArudinoInferface\obj\Debug\ArudinoInferface.Form1.resources
+c:\users\user\documents\visual studio 2013\Projects\ArudinoInferface\ArudinoInferface\obj\Debug\ArudinoInferface.Properties.Resources.resources
+c:\users\user\documents\visual studio 2013\Projects\ArudinoInferface\ArudinoInferface\obj\Debug\ArudinoInferface.csproj.GenerateResource.Cache
+c:\users\user\documents\visual studio 2013\Projects\ArudinoInferface\ArudinoInferface\bin\Debug\ArudinoInferface.exe
+c:\users\user\documents\visual studio 2013\Projects\ArudinoInferface\ArudinoInferface\bin\Debug\ArudinoInferface.pdb
+c:\users\user\documents\visual studio 2013\Projects\ArudinoInferface\ArudinoInferface\obj\Debug\ArudinoInferface.exe
+c:\users\user\documents\visual studio 2013\Projects\ArudinoInferface\ArudinoInferface\obj\Debug\ArudinoInferface.pdb
+c:\users\user\documents\visual studio 2013\Projects\ArudinoInferface\ArudinoInferface\obj\Debug\ArudinoInferface.csprojResolveAssemblyReference.cache

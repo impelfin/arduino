@@ -1,0 +1,43 @@
+int ledPins[] = {2,3,4,5,6};
+int FSRpin = 0;
+int Vo;
+float Rfsr;
+
+void setup() {
+  for(int i = 0; i <= 5; i++)
+    pinMode(ledPins[i], OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  int n;
+  Vo = analogRead(FSRpin);
+  Serial.println(Vo);
+  n = Vo/100; 
+  Serial.println(n);
+  if(n == 10) {
+    for(int i = 0; i <= 5; i++)
+      digitalWrite(ledPins[i], LOW);
+  } else if(n == 8) {
+      for(int i = 0; i <= 5; i++)
+        digitalWrite(ledPins[i], LOW);
+      digitalWrite(ledPins[0], HIGH);   
+  } else if(n == 7) {
+    for(int i = 0; i <= 5; i++)
+      digitalWrite(ledPins[i], LOW);
+    digitalWrite(ledPins[1], HIGH);    
+  } else if(n == 6) {
+    for(int i = 0; i <= 5; i++)
+      digitalWrite(ledPins[i], LOW);
+    digitalWrite(ledPins[2], HIGH);
+  } else if(n == 5) {
+    for(int i = 0; i <= 5; i++)
+      digitalWrite(ledPins[i], LOW);
+    digitalWrite(ledPins[3], HIGH);
+  } else if(n == 4){
+    for(int i = 0; i <= 5; i++)
+      digitalWrite(ledPins[i], LOW);
+    digitalWrite(ledPins[4], HIGH);
+  }
+  delay(100);
+}
