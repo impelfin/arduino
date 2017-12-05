@@ -71,7 +71,7 @@ void loop() {
       }
    }
    
-   if(sw1state == true) 
+   if(sw1state == true) {
       if(Count1 < 40)  digitalWrite(LED1, HIGH);
       if(Count1 > 40)  digitalWrite(LED1, LOW);
       if(Count1 > 80)  Count1 = 0;
