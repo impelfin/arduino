@@ -23,22 +23,22 @@ uint32_t MyColors[12] = {C0, C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, C11}; //pu
 uint8_t data[56];
 uint8_t counton = 0;
 boolean flag=0;
-int i;
+int led;
 
-uint32_t c = MyColors[0]; 
+uint32_t color = MyColors[0]; 
 
-void display_PixelColor(int n, uint32_t c) {
-      pixels.setPixelColor(n, c);
+void display_PixelColor(int led, uint32_t color) {
+      pixels.setPixelColor(led, color);
       pixels.show(); 
       delay(100); 
 }
 
 int data_create() {   
-  i = random(56); 
+  led = random(NUMPIXELS); 
   if(flag == 0) flag = 1; else flag = 0;
-  if(data[i] == 8) {
-    data[i] = flag;
-    return i;
+  if(data[led] == 8) {
+    data[led] = flag;
+    return led;
   } else {
     data_create();
   }  
@@ -47,26 +47,25 @@ int data_create() {
 void setup() {
   pixels.begin();
   pixels.setBrightness(20);
-  for(int i=0; i<56; i++) {
+  for(int i=0; i<NUMPIXELS; i++) {
     data[i] = 8;
   }
 }
 
 void loop() {  
-  i = data_create();
+  led = data_create();
   counton++;
-  if(flag == 0) c = MyColors[10]; else c = MyColors[11];
-  if((i % COUNT) != 6 && (i % COUNT) != 7) display_PixelColor(i, c);
+  if(flag == 0) color = MyColors[10]; else color = MyColors[11];
+  if((led % COUNT) != 6 && (led % COUNT) != 7) display_PixelColor(led, color);
 
   delay(50);
-  if(counton == 56) {
+  if(counton == NUMPIXELS) {
     counton = 0;
-    for(int i=0; i<56; i++) {
+    for(int i=0; i<NUMPIXELS; i++) {
       data[i] = 8;
     }
     delay(2000);
     pixels.clear();
   }
 }
-
 
