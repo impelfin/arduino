@@ -16,6 +16,7 @@ void loop() {
 
   if(last_btn == 1 && current_btn == 0) {
     buttonState =! buttonState;
+    Serial.println(buttonState);
   }
 
   last_btn = current_btn;
