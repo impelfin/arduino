@@ -1,30 +1,30 @@
- #include <PS2X_lib.h> 
-//电机引脚
-#define PWMA 12    //A电机转速
-#define DIRA1 34 
-#define DIRA2 35  //A电机方向
-#define PWMB 8    //B电机转速  
-#define DIRB1 37 
-#define DIRB2 36  //B电机方向
-#define PWMC 6   //C电机转速 9 change the 6
-#define DIRC1 43 
-#define DIRC2 42  //C电机方向
-#define PWMD 5    //D电机转速
-#define DIRD1 A4  //26  
-#define DIRD2 A5 //27  //D电机方向
+#include <PS2X_lib.h>
+// 모터 핀
+#define PWMA 12    // A 모터 속도
+#define DIRA1 34
+#define DIRA2 35  // A 모터 방향
+#define PWMB 8    // B 모터 속도
+#define DIRB1 37
+#define DIRB2 36  // B 모터 방향
+#define PWMC 6   // C 모터 속도 9를 6으로 변경
+#define DIRC1 43
+#define DIRC2 42  // C 모터 방향
+#define PWMD 5    // D 모터 속도
+#define DIRD1 A4  // 26
+#define DIRD2 A5 // 27  // D 모터 방향
 
-//PS2
-#define PS2_DAT        52  //14    
-#define PS2_CMD        51  //15
-#define PS2_SEL        53  //16
-#define PS2_CLK        50  //17
+// PS2
+#define PS2_DAT        52  // 14
+#define PS2_CMD        51  // 15
+#define PS2_SEL        53  // 16
+#define PS2_CLK        50  // 17
 
 char speed;
 // #define pressures   true
 #define pressures   false
 // #define rumble      true
 #define rumble      false
-PS2X ps2x; // create PS2 Controller Class
+PS2X ps2x; // PS2 컨트롤러 클래스 생성
 
 int error = 0;
 byte type = 0;
@@ -62,17 +62,15 @@ void (* resetFunc) (void) = 0;
 #define MIN_PWM   130
 int Motor_PWM = 130;
 
-//控制电机运动    宏定义
-
-
+// 모터 제어 매크로
 //    ↑A-----B↑   
 //     |  ↑  |
 //     |  |  |
 //    ↑C-----D↑
 void ADVANCE()
 {
-  MOTORA_FORWARD(Motor_PWM);MOTORB_FORWARD(Motor_PWM);    
-  MOTORC_FORWARD(Motor_PWM);MOTORD_FORWARD(Motor_PWM);    
+  MOTORA_FORWARD(Motor_PWM); MOTORB_FORWARD(Motor_PWM);
+  MOTORC_FORWARD(Motor_PWM); MOTORD_FORWARD(Motor_PWM);
 }
 
 //    ↓A-----B↓   
@@ -81,8 +79,8 @@ void ADVANCE()
 //    ↓C-----D↓
 void BACK()
 {
-  MOTORA_BACKOFF(Motor_PWM);MOTORB_BACKOFF(Motor_PWM);
-  MOTORC_BACKOFF(Motor_PWM);MOTORD_BACKOFF(Motor_PWM);
+  MOTORA_BACKOFF(Motor_PWM); MOTORB_BACKOFF(Motor_PWM);
+  MOTORC_BACKOFF(Motor_PWM); MOTORD_BACKOFF(Motor_PWM);
 }
 //    =A-----B↑   
 //     |   ↖ |
@@ -90,8 +88,8 @@ void BACK()
 //    ↑C-----D=
 void LEFT_1()
 {
-  MOTORA_STOP(Motor_PWM);MOTORB_FORWARD(Motor_PWM);
-  MOTORC_FORWARD(Motor_PWM);MOTORD_STOP(Motor_PWM);
+  MOTORA_STOP(Motor_PWM); MOTORB_FORWARD(Motor_PWM);
+  MOTORC_FORWARD(Motor_PWM); MOTORD_STOP(Motor_PWM);
 }
 
 //    ↓A-----B↑   
@@ -100,8 +98,8 @@ void LEFT_1()
 //    ↑C-----D↓
 void LEFT_2()
 {
-  MOTORA_BACKOFF(Motor_PWM);MOTORB_FORWARD(Motor_PWM);
-  MOTORC_FORWARD(Motor_PWM);MOTORD_BACKOFF(Motor_PWM);
+  MOTORA_BACKOFF(Motor_PWM); MOTORB_FORWARD(Motor_PWM);
+  MOTORC_FORWARD(Motor_PWM); MOTORD_BACKOFF(Motor_PWM);
 }
 //    ↓A-----B=   
 //     | ↙   |
@@ -109,8 +107,8 @@ void LEFT_2()
 //    =C-----D↓
 void LEFT_3()
 {
-  MOTORA_BACKOFF(Motor_PWM);MOTORB_STOP(Motor_PWM);
-  MOTORC_STOP(Motor_PWM);MOTORD_BACKOFF(Motor_PWM);
+  MOTORA_BACKOFF(Motor_PWM); MOTORB_STOP(Motor_PWM);
+  MOTORC_STOP(Motor_PWM); MOTORD_BACKOFF(Motor_PWM);
 }
 //    ↑A-----B=   
 //     | ↗   |
@@ -118,8 +116,8 @@ void LEFT_3()
 //    =C-----D↑
 void RIGHT_1()
 {
-  MOTORA_FORWARD(Motor_PWM);MOTORB_STOP(Motor_PWM);
-  MOTORC_STOP(Motor_PWM);MOTORD_FORWARD(Motor_PWM);
+  MOTORA_FORWARD(Motor_PWM); MOTORB_STOP(Motor_PWM);
+  MOTORC_STOP(Motor_PWM); MOTORD_FORWARD(Motor_PWM);
 }
 //    ↑A-----B↓   
 //     |  →  |
@@ -127,8 +125,8 @@ void RIGHT_1()
 //    ↓C-----D↑
 void RIGHT_2()
 {
-  MOTORA_FORWARD(Motor_PWM);MOTORB_BACKOFF(Motor_PWM);
-  MOTORC_BACKOFF(Motor_PWM);MOTORD_FORWARD(Motor_PWM);
+  MOTORA_FORWARD(Motor_PWM); MOTORB_BACKOFF(Motor_PWM);
+  MOTORC_BACKOFF(Motor_PWM); MOTORD_FORWARD(Motor_PWM);
 }
 //    =A-----B↓   
 //     |   ↘ |
@@ -136,8 +134,8 @@ void RIGHT_2()
 //    ↓C-----D=
 void RIGHT_3()
 {
-  MOTORA_STOP(Motor_PWM);MOTORB_BACKOFF(Motor_PWM);
-  MOTORC_BACKOFF(Motor_PWM);MOTORD_STOP(Motor_PWM);
+  MOTORA_STOP(Motor_PWM); MOTORB_BACKOFF(Motor_PWM);
+  MOTORC_BACKOFF(Motor_PWM); MOTORD_STOP(Motor_PWM);
 }
 // ↓A-----B↑
 //  |     |
@@ -145,8 +143,8 @@ void RIGHT_3()
 // ↓C-----D↑
 void TURN_LEFT()
 {
-  MOTORA_BACKOFF(Motor_PWM);MOTORB_FORWARD(Motor_PWM);
-  MOTORC_BACKOFF(Motor_PWM);MOTORD_FORWARD(Motor_PWM);  
+  MOTORA_BACKOFF(Motor_PWM); MOTORB_FORWARD(Motor_PWM);
+  MOTORC_BACKOFF(Motor_PWM); MOTORD_FORWARD(Motor_PWM);
 }
 // ↑A-----B↓
 //  |     |
@@ -154,8 +152,8 @@ void TURN_LEFT()
 // ↑C-----D↓
 void TURN_RIGHT()
 {
-  MOTORA_FORWARD(Motor_PWM);MOTORB_BACKOFF(Motor_PWM);
-  MOTORC_FORWARD(Motor_PWM);MOTORD_BACKOFF(Motor_PWM);  
+  MOTORA_FORWARD(Motor_PWM); MOTORB_BACKOFF(Motor_PWM);
+  MOTORC_FORWARD(Motor_PWM); MOTORD_BACKOFF(Motor_PWM);
 }
 //    =A-----B=  
 //     |  =  |
@@ -168,26 +166,27 @@ void STOP()
 }
 void UART_Control()
 {
-  char Uart_Date=0;
- if(SERIAL.available())
+  char Uart_Date = 0;
+  if (SERIAL.available())
   {
-   Uart_Date = SERIAL.read();
+    Uart_Date = SERIAL.read();
   }
-  switch(Uart_Date)
+  switch (Uart_Date)
   {
-     case 'A':  ADVANCE(); M_LOG("Run!\r\n");        break;
-     case 'B':  RIGHT_1();  M_LOG("Right up!\r\n");     break;
-     case 'C':  RIGHT_2();  M_LOG("Right!\r\n");        break;
-     case 'D':  RIGHT_3();  M_LOG("Right down!\r\n");   break;
-     case 'E':  BACK();     M_LOG("Run!\r\n");        break;
-     case 'F':  LEFT_3();   M_LOG("Left down!\r\n");    break;
-     case 'G':  LEFT_2();   M_LOG("Left!\r\n");       break;
-     case 'H':  LEFT_1();   M_LOG("Left up!\r\n");  break;
-     case 'Z':  STOP();     M_LOG("Stop!\r\n");       break;
-     case 'L':  Motor_PWM = 240;                      break;
-     case 'M':  Motor_PWM = 130;                       break;
-   }
+    case 'A':  ADVANCE(); M_LOG("전진!\r\n");        break;
+    case 'B':  RIGHT_1();  M_LOG("우상향!\r\n");     break;
+    case 'C':  RIGHT_2();  M_LOG("우회전!\r\n");        break;
+    case 'D':  RIGHT_3();  M_LOG("우하향!\r\n");   break;
+    case 'E':  BACK();     M_LOG("후진!\r\n");        break;
+    case 'F':  LEFT_3();   M_LOG("좌하향!\r\n");    break;
+    case 'G':  LEFT_2();   M_LOG("좌회전!\r\n");       break;
+    case 'H':  LEFT_1();   M_LOG("좌상향!\r\n");  break;
+    case 'Z':  STOP();     M_LOG("정지!\r\n");       break;
+    case 'L':  Motor_PWM = 240;                      break;
+    case 'M':  Motor_PWM = 130;                       break;
+  }
 }
+
 void IO_init()
 {
   pinMode(PWMA, OUTPUT);
@@ -204,151 +203,157 @@ void IO_init()
   pinMode(DIRD2, OUTPUT);
   STOP();
 }
+
 void setup()
 {
   Serial.begin(9600);
-  delay(300) ;//added delay to give wireless ps2 module some time to startup, before configuring it
-  //CHANGES for v1.6 HERE!!! **************PAY ATTENTION*************
+  delay(300); // 무선 PS2 모듈이 시작될 시간을 주기 위한 지연 추가
+  // v1.6 변경 사항 **************주의*************
 
-  //setup pins and settings: GamePad(clock, command, attention, data, Pressures?, Rumble?) check for error
+  // 핀 및 설정 설정: 게임패드(클락, 커맨드, 어텐션, 데이터, 압력?, 진동?) 오류 확인
   error = ps2x.config_gamepad(PS2_CLK, PS2_CMD, PS2_SEL, PS2_DAT, pressures, rumble);
 
   if (error == 0) {
-    Serial.print("Found Controller, configured successful ");
-    Serial.print("pressures = ");
+    Serial.print("컨트롤러 찾음, 구성 성공 ");
+    Serial.print("압력 = ");
     if (pressures)
       Serial.println("true ");
     else
       Serial.println("false");
-    Serial.print("rumble = ");
+    Serial.print("진동 = ");
     if (rumble)
       Serial.println("true)");
     else
       Serial.println("false");
-    Serial.println("Try out all the buttons, X will vibrate the controller, faster as you press harder;");
-    Serial.println("holding L1 or R1 will print out the analog stick values.");
-    Serial.println("Note: Go to www.billporter.info for updates and to report bugs.");
+    Serial.println("모든 버튼을 시험해보세요. X 버튼은 압력에 따라 진동이 발생하며 압력이 강할수록 진동이 더 빨라집니다.");
+    Serial.println("L1 또는 R1 버튼을 누르면 아날로그 스틱의 값을 출력합니다.");
+    Serial.println("참고: 업데이트 및 버그 보고는 www.billporter.info에서 확인할 수 있습니다.");
   }
   else if (error == 1)
   {
-    Serial.println("No controller found, check wiring, see readme.txt to enable debug. visit www.billporter.info for troubleshooting tips");
+    Serial.println("컨트롤러를 찾을 수 없습니다. 배선을 확인하고, 디버그를 사용하려면 readme.txt를 참조하세요. 문제 해결 팁은 www.billporter.info를 방문하세요.");
     resetFunc();
-    
+
   }
 
   else if (error == 2)
-    Serial.println("Controller found but not accepting commands. see readme.txt to enable debug. Visit www.billporter.info for troubleshooting tips");
+    Serial.println("컨트롤러를 찾았지만 명령을 수락하지 않습니다. 디버그를 사용하려면 readme.txt를 참조하세요. 문제 해결 팁은 www.billporter.info를 방문하세요.");
 
   else if (error == 3)
-    Serial.println("Controller refusing to enter Pressures mode, may not support it. ");
+    Serial.println("컨트롤러가 압력 모드 진입을 거부했습니다. 지원하지 않을 수 있습니다.");
+
 
 //  Serial.print(ps2x.Analog(1), HEX);
 
   type = ps2x.readType();
   switch (type) {
-  case 0:
-    Serial.print("Unknown Controller type found ");
-    break;
-  case 1:
-    Serial.print("DualShock Controller found ");
-    break;
-  case 2:
-    Serial.print("GuitarHero Controller found ");
-    break;
-  case 3:
-    Serial.print("Wireless Sony DualShock Controller found ");
-    break;
+    case 0:
+      Serial.print("알 수 없는 컨트롤러 타입이 감지되었습니다. ");
+      break;
+    case 1:
+      Serial.print("DualShock 컨트롤러가 감지되었습니다. ");
+      break;
+    case 2:
+      Serial.print("GuitarHero 컨트롤러가 감지되었습니다. ");
+      break;
+    case 3:
+      Serial.print("무선 소니 DualShock 컨트롤러가 감지되었습니다. ");
+      break;
   }
   IO_init();
-  
-//  SERIAL.print("Start");
+
+//  SERIAL.print("시작");
 }
 
 
 void loop() {
-  /* You must Read Gamepad to get new values and set vibration values
-    ps2x.read_gamepad(small motor on/off, larger motor strenght from 0-255)
-    if you don't enable the rumble, use ps2x.read_gamepad(); with no values
-    You should call this at least once a second
+  /* 새로운 값을 받고 진동 값을 설정하기 위해 게임패드를 읽어야 합니다.
+     ps2x.read_gamepad(작은 모터 온/오프, 큰 모터 강도 0-255)
+     진동을 사용하지 않을 경우, ps2x.read_gamepad()을 값 없이 호출하세요.
+     최소한 1초에 한 번은 호출해야 합니다.
   */
 
-  UART_Control();//串口接收处理 
-  if (error == 1) //skip loop if no controller found
+  UART_Control(); // 시리얼 통신으로 입력 처리
+  if (error == 1) // 컨트롤러를 찾을 수 없으면 루프를 건너뜁니다.
     return;
 
-  if (type == 2) { //Guitar Hero Controller
+  if (type == 2) { // Guitar Hero 컨트롤러
     return;
   }
-  else  { //DualShock Controller
-    ps2x.read_gamepad(false, vibrate); //read controller and set large motor to spin at 'vibrate' speed
+  else  { // DualShock 컨트롤러
+    ps2x.read_gamepad(false, vibrate); // 컨트롤러를 읽고 큰 모터를 '진동' 속도로 회전하도록 설정합니다.
 
 
-//start 开始运行，电机初PWM为120；
+    // 시작 버튼을 누를 경우, 모터 초기 PWM이 120입니다.
     if (ps2x.Button(PSB_START))  {
-      Serial.println("Start is being held");
-     Motor_PWM = 90;
+      Serial.println("시작 버튼이 눌렸습니다.");
+      Motor_PWM = 90;
       ADVANCE();
-
-
     }
-// 电机正转；
+
+    // 모터 정방향 회전
     if (ps2x.Button(PSB_PAD_UP)) {
-      Serial.println("Up held this hard: ");
+      Serial.println("위 버튼이 눌렸습니다.");
       Motor_PWM = 120;
-     ADVANCE();
+      ADVANCE();
     }
 
-// 电机反转；
+    // 모터 역방향 회전
     if (ps2x.Button(PSB_PAD_DOWN)) {
-      Serial.println("Down held this hard: ");
-       Motor_PWM = 120;
+      Serial.println("아래 버튼이 눌렸습니다.");
+      Motor_PWM = 120;
       BACK();
     }
 
-//左转；
+    // 왼쪽 회전
     if (ps2x.Button(PSB_PAD_LEFT)) {
-      Serial.println("turn left ");
-        Motor_PWM = 120;//200
+      Serial.println("왼쪽으로 회전합니다.");
+      Motor_PWM = 120; // 200
       LEFT_1();
     }
 
-//右转；
+    // 오른쪽 회전
     if (ps2x.Button(PSB_PAD_RIGHT)) {
-      Serial.println("turn right");
-        Motor_PWM = 120;//200
+      Serial.println("오른쪽으로 회전합니다.");
+      Motor_PWM = 120; // 200
       RIGHT_1();
     }
-// Stop
+
+   // 정지
     if (ps2x.Button(PSB_SELECT)) {
-      Serial.println("stop");
+      Serial.println("정지합니다.");
       STOP();
     }
-// 左平移
+
+    // 왼쪽 이동
     if (ps2x.Button(PSB_PINK)) {
-      Serial.println("motor_pmove_left");
+      Serial.println("왼쪽으로 이동합니다.");
       LEFT_2();
     }
-// 右平移
+
+    // 오른쪽 이동
     if (ps2x.Button(PSB_RED)) {
-      Serial.println("motor_pmove_right");
+      Serial.println("오른쪽으로 이동합니다.");
       RIGHT_2();
     }
-// Turn left
-    if(ps2x.Button(PSB_GREEN)) {
-      Serial.println("turn left");
+
+    // 왼쪽으로 회전
+    if (ps2x.Button(PSB_GREEN)) {
+      Serial.println("왼쪽으로 회전합니다.");
       TURN_LEFT();
     }
-// Turn right
-    if(ps2x.Button(PSB_BLUE)) {
-      Serial.println("turn right");
+
+    // 오른쪽으로 회전
+    if (ps2x.Button(PSB_BLUE)) {
+      Serial.println("오른쪽으로 회전합니다.");
       TURN_RIGHT();
     }
     delay(20);
 
   }
-  if (ps2x.Button(PSB_L1) || ps2x.Button(PSB_R1)) { //print stick values if either is TRUE
-    Serial.print("Stick Values:");
-    Serial.print(ps2x.Analog(PSS_LY), DEC); //Left stick, Y axis. Other options: LX, RY, RX
+  if (ps2x.Button(PSB_L1) || ps2x.Button(PSB_R1)) { // TRUE인 경우 스틱 값을 출력합니다.
+    Serial.print("스틱 값:");
+    Serial.print(ps2x.Analog(PSS_LY), DEC); // 왼쪽 스틱, Y축. 다른 옵션: LX, RY, RX
     Serial.print(",");
     Serial.print(ps2x.Analog(PSS_LX), DEC);
     Serial.print(",");
@@ -361,40 +366,39 @@ void loop() {
     int RY = ps2x.Analog(PSS_RY);
     int RX = ps2x.Analog(PSS_RX);
 
-    if (LY < 127) //前进
+    // 전진
+    if (LY < 127)
     {
-
-     Motor_PWM = 1.5 * (127 - LY);
+      Motor_PWM = 1.5 * (127 - LY);
       ADVANCE();
       delay(20);
     }
-    //后退
+    // 후진
     if (LY > 127)
     {
       Motor_PWM = 1.5 * (LY - 128);
       BACK();
       delay(20);
     }
-    //左转
+    // 왼쪽 회전
     if (LX < 128)
     {
       Motor_PWM = 1.5 * (127 - LX);
-       LEFT_1();
+      LEFT_1();
       delay(20);
     }
-    //右转
+    // 오른쪽 회전
     if (LX > 128)
     {
       Motor_PWM = 1.5 * (LX - 128);
       RIGHT_3();
       delay(20);
     }
-    //如果摇杆居中
+    // 조이스틱이 중앙에 있는 경우
     if (LY >= 128 && LY <= 128 && LX >= 128 && LX <= 128)
     {
       STOP();
       delay(20);
     }
-
   }
 }
